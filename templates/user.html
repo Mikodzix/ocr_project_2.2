@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{%block title%}USER DASHBOARD{%endblock%}
+{% block content %}
+<body style="background-color: #CEC9C9;">
+<div STYLE="text-align:center;color:black;font-size:20px">
+    <h2>👤{{username}}</h2>
+</div>
+<table>
+    <thead style="background-color:pink;">
+    <tr>
+        <td style ="width:20%;text-align:center">UPLOAD DATE</td>
+        <td style ="width:20%;text-align:center">FILENAME</td>
+        <td style ="width:20%;text-align:center">IMAGE PREVIEW</td>
+        <td style ="width:20%;text-align:center">ACTIONS</td>
+    </tr>
+    </thead>
+    <tbody style="background-color:grey;">
+    {% for user in users %}
+    <tr>
+        <td>{{ user.created_at.strftime('%A  %d  %B  %Y  %H:%M') }}</td>
+        <td>{{ user.image_path }}</td>
+        <td>
+{% if user.image_path %}
+    <img src="{{ url_for('static', filename='uploads/' + user.image_path) }}" style="width:200px">
+{% else %}
+    <p style="color: gray;">No image uploaded yet.</p>
+{% endif %}
+
+        </td>
+        <td>
+<form action="/uploadocr2" method="post">
+    <input type="hidden" name="image_path" value="{{ user.image_path }}">
+    <button type="submit" style="...">PERFORM OCR</button>
+</form>
+
+
+            <button style="border: 2px black bold;border-radius:10px;background-color:red">
+                <a href="/uploadocr2{{ url_for('static', filename='uploads/' + user.image_path) }}" target="_blank">VIEW IMAGE IN NEW TAB</a>
+            </button>
+
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+{% endblock %}

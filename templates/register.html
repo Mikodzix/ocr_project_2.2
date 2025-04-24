@@ -1,0 +1,28 @@
+ {% extends "base.html" %}
+ {%block title%}REGISTER{%endblock%}
+  {% block content %}
+ <body style="background-color: #CEC9C9;">
+            {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <p>{{msg}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+<div style="text-align:center">
+    <h1>register</h1>
+<form action="/submit", method="post" enctype="multipart/form-data">
+    <p>*username:</p>
+    <p><input type="text" name="fname" required></p>
+    <p>*enter password:</p>
+    <p><input type="text" name="reg-password" required></p>
+    <p>*re-enter password:</p>
+    <p><input type="text" name="reg-password-confirm" required></p>
+    <p>*email:</p>
+    <p><input type="email" name="email" required></p>
+        <p><input type="submit" value="submit"></p>
+    <a href="/login-redirect" ><u>Already have an account? Log in</u></a>
+</form>
+</div>
+ </body>
+{% endblock %}

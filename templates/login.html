@@ -1,0 +1,24 @@
+ {% extends "base.html" %}
+ {%block title%}LOGIN{%endblock%}
+  {% block content %}
+            {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <p>{{msg}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+ <body style="background-color: #CEC9C9;">
+<div style="text-align:center">
+    <h1>login to DASHBOARD</h1>
+    <form action="/search" method="post">
+        <p>username:</p>
+        <p><input type="text" name="reqfname"  placeholder="{{failed}}" required></p>
+        <p>password</p>
+        <p><input type="password" name="reqemail" required ></p>
+        <p><input type="submit" value="submit"></p>
+        <a href="/register-redirect"><u>No account? Register to store pictures</u></a>
+    </form>
+</div>
+ </body>
+ {% endblock %}

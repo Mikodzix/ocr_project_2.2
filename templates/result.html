@@ -1,0 +1,77 @@
+ {% extends "base.html" %}
+ {%block title%}RESULT{%endblock%}
+  {% block content %}
+            {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <p>{{msg}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+<head>
+    <title>OCR Result</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #CEC9C9;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 1rem;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007BFF;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Detected Text</h2>
+        <pre>{{ detected_text }}</pre>
+
+        <form action="/download" method="post">
+            <input type="hidden" name="text_content" value="{{ detected_text }}">
+            <button type="submit" class="button">Save As DOC</button>
+        </form>
+
+        <a href="/" class="back-link">← Back to Upload</a>
+    </div>
+</body>
+ {% endblock %}

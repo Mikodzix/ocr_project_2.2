@@ -1,0 +1,178 @@
+ {% extends "base.html" %}
+ {%block title%}HOME{%endblock%}
+  {% block content %}
+            {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <p>{{msg}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+ <head>
+     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+     <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #CEC9C9;
+            margin: 0;
+
+        }
+        .tesseract-container {
+            background-color: #fff;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 1rem;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007BFF;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+ <br>
+  <div class="container-fluid">
+
+<div class="container" class="docx-container">
+    <h2>Upload a pdf</h2>
+  <form method="post" action="/pdf-upload" enctype="multipart/form-data">
+    <input type="file" name="pdf-submit" accept="application/pdf">
+    <button type="submit">Submit</button>
+  </form>
+</div>
+  </div>
+
+ <br><br>
+
+ <div class="container-fluid">
+<div class="container" class="docx-container">
+
+    <h2>Upload an image</h2>
+
+<a title="Documents processed here can be handwritten or text type,
+highly efficient, uses google cloud vision, but requires stable
+internet connection"     style="cursor:pointer">
+             ❔hover for info
+</a>
+
+  <form method="POST" action="/uploadocr" enctype="multipart/form-data">
+    <input type="file" name="image"  accept="image/*" onchange="previewImages(this.files)" required>
+    <button type="submit">Submit</button>
+  </form>
+    <div id="preview"></div>
+
+<script>
+function previewImages(files) {
+    const preview = document.getElementById("preview");
+    preview.innerHTML = "";
+    for (const file of files) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.style.height = "100px";
+        img.style.margin = "5px";
+        preview.appendChild(img);
+    }
+}
+</script>
+</div>
+
+<br><br>
+     
+ <div class="tesseract-container">
+     <p><b>LOW DATA OCR</b></p>
+         <a title="Offline processor, works well with little to no data.
+Documents processed here have to be scanned text type
+documents that are straight and have no obstructions in
+the text for maximum efficiency.This model uses Tesseract for
+image processing.HANWRITTEN DOCUMENTS NOT RECOMMENDED
+FOR THIS MODEL, FOR HANDWRITTEN CONVERSION USE ABOVE MODEL." style="cursor:pointer">
+             ❔hover for info
+         </a>
+
+    <pre id="text-content"  style="color:#868686">SCANNED TEXT WILL APPEAR HERE</pre>
+    <input type="file" id="imgfile" accept="image/*">
+
+    <br><br>
+
+    <button id="btn">submit</button>
+
+    <br><br>
+
+    <button onclick="saveAsDoc()">Save as .doc</button>
+</div>
+</div>
+  <script>
+      //Tesseract image to text conversion code
+ document.getElementById('btn').addEventListener('click', () => {
+    console.log('clicked');
+    console.log(document.getElementById('imgfile').files[0]);
+
+Tesseract.recognize(
+    document.getElementById('imgfile').files[0],
+    'eng',
+    { logger: m => console.log(m) }
+).then(({ data: { text } }) => {
+    document.getElementById('text-content').innerText = text;
+    console.log(text);
+
+})
+})
+
+// Function to save text as .doc file
+function saveAsDoc() {
+var content = document.getElementById("text-content").innerHTML;
+var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+           "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+           "xmlns='http://www.w3.org/TR/REC-html40'>" +
+           "<head><meta charset='utf-8'></head><body>";
+var footer = "</body></html>";
+var sourceHTML = header + content + footer;
+var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+var fileDownload = document.createElement("a");
+document.body.appendChild(fileDownload);
+fileDownload.href = source;
+fileDownload.download = 'document.doc';
+fileDownload.click();
+document.body.removeChild(fileDownload);
+}</script>
+ {% endblock %}
+
