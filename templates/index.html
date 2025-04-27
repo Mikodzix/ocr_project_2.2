@@ -67,15 +67,39 @@
             color: #007BFF;
             margin-left: 15px;
         }
+         .loading-popup {
+            display: none;  /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .loading-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .loading-box img {
+            width: 170px;
+            height: 150px;
+        }
     </style>
 </head>
  <br>
   <div class="container-fluid">
 
-<div class="container" class="docx-container">
+<div class="container" >
+
     <h2>Upload a pdf</h2>
-  <form method="post" action="/pdf-upload" enctype="multipart/form-data">
-    <input type="file" name="pdf-submit" accept="application/pdf">
+  <form method="post" action="/pdf-upload" enctype="multipart/form-data" onsubmit="showLoadingPopup()">
+    <input type="file" name="pdf-submit" accept="application/pdf" required>
     <button type="submit">Submit</button>
   </form>
 </div>
@@ -84,7 +108,7 @@
  <br><br>
 
  <div class="container-fluid">
-<div class="container" class="docx-container">
+<div class="container" >
 
     <h2>Upload an image</h2>
 
@@ -94,7 +118,7 @@ internet connection"     style="cursor:pointer">
              ❔hover for info
 </a>
 
-  <form method="POST" action="/uploadocr" enctype="multipart/form-data">
+  <form method="POST" action="/uploadocr" enctype="multipart/form-data"  onsubmit="showLoadingPopup()">
     <input type="file" name="image"  accept="image/*" onchange="previewImages(this.files)" required>
     <button type="submit">Submit</button>
   </form>
@@ -114,10 +138,12 @@ function previewImages(files) {
 }
 </script>
 </div>
+ </div>
 
 <br><br>
      
  <div class="tesseract-container">
+
      <p><b>LOW DATA OCR</b></p>
          <a title="Offline processor, works well with little to no data.
 Documents processed here have to be scanned text type
@@ -129,17 +155,28 @@ FOR THIS MODEL, FOR HANDWRITTEN CONVERSION USE ABOVE MODEL." style="cursor:point
          </a>
 
     <pre id="text-content"  style="color:#868686">SCANNED TEXT WILL APPEAR HERE</pre>
-    <input type="file" id="imgfile" accept="image/*">
+    <input type="file" id="imgfile" accept="image/*" required>
 
     <br><br>
 
-    <button id="btn">submit</button>
+    <button id="btn" type="submit">submit</button>
 
     <br><br>
 
     <button onclick="saveAsDoc()">Save as .doc</button>
+
 </div>
-</div>
+
+ <div id="loading-popup" class="loading-popup" style="display: none;">
+        <div class="loading-box">
+            <img src="{{ url_for('static', filename='images/processing.gif') }}" alt="Loading..." >
+            <p>Processing your document... Please wait.</p>
+        </div>
+ </div>
+
+
+
+
   <script>
       //Tesseract image to text conversion code
  document.getElementById('btn').addEventListener('click', () => {
@@ -173,6 +210,11 @@ fileDownload.href = source;
 fileDownload.download = 'document.doc';
 fileDownload.click();
 document.body.removeChild(fileDownload);
-}</script>
- {% endblock %}
+}
 
+// Function to show the loading pop-up
+function showLoadingPopup() {
+       document.getElementById("loading-popup").style.display = "flex";
+        }
+  </script>
+ {% endblock %}

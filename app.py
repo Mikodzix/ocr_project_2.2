@@ -9,10 +9,9 @@ from datetime import timedelta, datetime
 import bcrypt
 from pdf2image import convert_from_path
 import pytesseract
-from ExtractTable import ExtractTable
-
-import csv
-
+import msoffcrypto
+import docx
+import tempfile
 
 
 app = Flask(__name__,static_folder='static')
@@ -183,10 +182,18 @@ def logout():
     session.pop("username", None)
     return redirect(url_for("search"))
 
-#DOWNLOAD GOOGLE VISION OCR DOCUMENT ROUTE
+#DOWNLOAD OCR DOCUMENT AS DOCX ROUTE
 @app.route('/download', methods=['POST'])
 def download_doc():
-    detected_text = request.form['text_content']
+
+    detected_text = request.form['real-text']
+    doc_name = request.form.get('download-doc-name')
+
+    if doc_name:
+        doc_name = doc_name
+    else:
+        doc_name = 'ocr_result'
+
 
     # Create a new document with the text
     doc = Document()
@@ -202,9 +209,70 @@ def download_doc():
     return send_file(
         file_stream,
         as_attachment=True,
-        download_name='ocr_result.docx',
+        download_name=f'{doc_name}.docx',
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
+
+#ORGANIZATIONAL SYSTEM DOWLOAD WITH LOCK CAPABILITY
+@app.route('/download2', methods=['POST'])
+def download2():
+    if request.method == "POST":
+            edited_text = request.form['real-text']
+            protect = request.form.get('lock-doc')
+            doc_name = request.form.get('download-doc-name')
+
+            if doc_name:
+                doc_name = doc_name
+            else:
+                doc_name = 'ocr_result'
+
+            if protect:
+                    doc_lock = request.form['lock-password']
+                    password =  doc_lock # you can also let the user pick the password!
+                    protected_docx = create_protected_docx(edited_text, password)
+
+                    return send_file(
+                        protected_docx,
+                        as_attachment=True,
+                        download_name=f"{doc_name}.locked.docx",
+                        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+            else:
+                # Create a new document with the text
+                doc = Document()
+                doc.add_paragraph(edited_text)
+
+                # Save to memory
+                file_stream = io.BytesIO()
+                doc.save(file_stream)
+                file_stream.seek(0)
+
+                # Send the file for download
+                return send_file(
+                    file_stream,
+                    as_attachment=True,
+                    download_name=f'{doc_name}.docx',
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                )
+
+#LOCK PDF FUNCTION
+def create_protected_docx(text, password):
+        # Step 1: Create a normal docx in memory
+        file_stream = io.BytesIO()
+        doc = docx.Document()
+        doc.add_paragraph(text)
+        doc.save(file_stream)
+
+        # Step 2: Protect it with a password
+        file_stream.seek(0)
+        office_file = msoffcrypto.OfficeFile(file_stream)
+
+        protected_stream = io.BytesIO()
+        office_file.encrypt(password=password, outfile=protected_stream)
+
+        protected_stream.seek(0)
+        return protected_stream
+
 
 #UPLOAD GOOGLE VISION OCR FILE INPUT
 @app.route('/uploadocr', methods=['POST'])
@@ -359,23 +427,28 @@ def user_redirect():
 #PERFORM PDF OCR
 @app.route("/pdf-upload",methods=["POST"])
 def pdf_upload():
-        pdf = request.files['pdf-submit']
-        temp_path = "./temppdf/temp_uploaded.pdf"
-        pdf.save(temp_path)
-        pdftest = convert_from_path(temp_path,dpi=300)
+    pdf = request.files['pdf-submit']
 
-        all_text = ""
-        for i, img in enumerate(pdftest):
-            text = pytesseract.image_to_string(img)
-            all_text += f"--- Page {i+1} ---\n{text}\n\n"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
+        pdf.save(temp_pdf)
+        temp_pdf_path = temp_pdf.name  # Path to the temp file
 
-        with open("output.txt", "w", encoding="utf-8") as f:
-            f.write(all_text)
+    pdftest = convert_from_path(temp_pdf_path, dpi=300)
 
-        return render_template("result.html",detected_text=all_text)
+    all_text = ""
+    for i, img in enumerate(pdftest):
+        text = pytesseract.image_to_string(img)
+        all_text += f"--- Page {i + 1} ---\n{text}\n\n"
+
+    # CLEANUP
+    if os.path.exists(temp_pdf_path):
+        os.remove(temp_pdf_path)
+
+    return render_template("result.html", detected_text=all_text)
 
 #<------------------------------------------WORKING CODE ABOVE------------------------------------------------------>
 #<------------------------------------------TEST CODE BELOW---------------------------------------------------------->
+
 
 
 
@@ -386,4 +459,3 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(host="0.0.0.0", port=5000, debug=True)
-    #10.10.43.80:5000

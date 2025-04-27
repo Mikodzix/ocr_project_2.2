@@ -59,19 +59,58 @@
             color: #007BFF;
             margin-left: 15px;
         }
+
+
     </style>
 </head>
 <body>
+<form action="/download2" method="post">
+
     <div class="container">
-        <h2>Detected Text</h2>
-        <pre>{{ detected_text }}</pre>
+                <h2>Detected Text</h2>
+                <textarea name="real-text" style="
+          white-space: pre;
+          overflow-wrap: normal;
+          overflow-x: scroll;
+          width: 100%;
+          height: 500px;
+          font-family: monospace;
+          margin:auto;
+        ">{{ detected_text }}</textarea>
+        <input type="checkbox" id="check-lock" value="LOCK DOCUMENT" name="lock-doc" onclick="showlock()" >
+        <label for="check-lock">check to password lock document</label>
+<br>
+        <label for="lock-password" id="lock-label"  class="locks" style="display:none">Document Password:</label>
 
-        <form action="/download" method="post">
-            <input type="hidden" name="text_content" value="{{ detected_text }}">
-            <button type="submit" class="button">Save As DOC</button>
-        </form>
+        <input type="hidden" class="locks" name="lock-password" id="lock-password" required minlength="4"   oninvalid="this.setCustomValidity('Password must be at least 4 characters.')"
+            oninput="this.setCustomValidity('')">
 
+        <br>
+        <label style="display:none; color:blue" id="lock-info"><i>❗Locked documents cannot be opened at all without password. KEEP IT SAFE.</i></label>
+<br>
+        <label>Save filename:</label>
+        <input type="text" id="download-doc-name" name="download-doc-name" placeholder="ocr_result.docx is the default name" style="width:40%">
+
+        <button type="submit" class="button">Save As DOC</button>
+        <br>
         <a href="/" class="back-link">← Back to Upload</a>
     </div>
+</form>
+<script>
+function showlock() {
+    let checkbox = document.getElementById("check-lock");
+    if (checkbox.checked) {
+        document.getElementById("lock-password").type = "password";
+        document.getElementById("lock-label").style.display = "inline";
+        document.getElementById("lock-info").style.display = "inline";
+        document.getElementById("download-doc-name").placeholder = "ocr_result_protected.docx is the default name";
+    } else {
+        document.getElementById("lock-password").type = "hidden";
+        document.getElementById("lock-label").style.display = "none";
+        document.getElementById("lock-info").style.display = "none";
+        document.getElementById("download-doc-name").placeholder = "ocr_result.docx is the default name";
+    }
+}
+</script>
 </body>
  {% endblock %}
