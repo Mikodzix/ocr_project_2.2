@@ -1,24 +1,127 @@
- {% extends "base.html" %}
- {%block title%}UPLOAD{%endblock%}
-  {% block content %}
-            {% with messages = get_flashed_messages() %}
+{% extends "base.html" %}
+
+{% block title %}UPLOAD{% endblock %}
+
+{% block content %}
+<head>
+    <style>
+        body {
+            background-color: #296f6d;
+            font-family: Arial, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #e1f4f3;
+            font-size: 36px;
+            margin-top: 50px;
+        }
+
+        form {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            width: 300px;
+            margin: 0 auto;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        input[type="file"] {
+            margin: 10px 0 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            color: #333;
+            font-size: 16px;
+            width: 100%; /* Ensure the input takes up full width */
+            box-sizing: border-box; /* Include padding in width calculation */
+            overflow: hidden; /* Hide overflow text */
+        }
+
+        input[type="submit"] {
+            padding: 12px 20px;
+            background-color: #49beb7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3d908e;
+        }
+
+        button {
+            background-color: #49beb7;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button a {
+            text-decoration: none;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #3d908e;
+        }
+
+        .flash-messages {
+            color: #f8d7da;
+            background-color: #f5c6cb;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .flash-messages p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body style="text-align: center;">
+    <h1>Upload an Image</h1>
+
+    <!-- Display any flash messages -->
+    {% with messages = get_flashed_messages() %}
         {% if messages %}
-            {% for msg in messages %}
-                <p>{{msg}}</p>
-            {% endfor %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
     {% endwith %}
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body style="background-color: #CEC9C9;">
 
-<form action="/upload" method="post" enctype="multipart/form-data">
-    <label for="image">STORE TO DATABASE:</label>
-    <input type="file" id="image" name="image" accept="image/*"><br><br>
-    <p><input type="submit" value="submit"></p>
-</form>
-<button><a href="/user-redirect">GO TO USER DASHBOARD</a></button>
+    <!-- Upload form -->
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="image">Choose an image to upload:</label>
+        <input type="file" id="image" name="image" accept="image/*">
+        <input type="submit" value="Upload">
+    </form>
+
+    <!-- Back to dashboard button -->
+    <button><a href="/user">Go to User Dashboard</a></button>
 </body>
+
 {% endblock %}

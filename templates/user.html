@@ -1,47 +1,120 @@
 {% extends "base.html" %}
-{%block title%}USER DASHBOARD{%endblock%}
+{% block title %}USER DASHBOARD{% endblock %}
+
 {% block content %}
-<body style="background-color: #CEC9C9;">
-<div STYLE="text-align:center;color:black;font-size:20px">
-    <h2>👤{{username}}</h2>
+<style>
+    body {
+        background-color: #296f6d;
+        font-family: Arial, sans-serif;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        color: white;
+        margin-top: 30px;
+        font-size: 24px;
+    }
+
+    table {
+        width: 90%;
+        margin: 40px auto;
+        border-collapse: collapse;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    thead {
+        background-color: #1f4f4e;
+        color: white;
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: center;
+    }
+
+    tbody {
+        background-color: #e6f4f4;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #cde7e7;
+    }
+
+    #img {
+        width: 200px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-button {
+        background-color: #1f4f4e;
+        color: white;
+        padding: 10px 16px;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .action-button:hover {
+        background-color: #00b3a4;
+    }
+
+    .action-link {
+        background-color: #b30000;
+        color: white;
+        padding: 10px 16px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+    }
+
+    .action-link:hover {
+        background-color: #ff4d4d;
+    }
+</style>
+
+<div class="dashboard-header">
+    <h2>👤 {{ username }}</h2>
 </div>
+
 <table>
-    <thead style="background-color:pink;">
-    <tr>
-        <td style ="width:25%;text-align:center">UPLOAD DATE</td>
-        <td style ="width:25%;text-align:center">FILENAME</td>
-        <td style ="width:25%;text-align:center">IMAGE PREVIEW</td>
-        <td style ="width:25%;text-align:center">ACTIONS</td>
-    </tr>
+    <thead>
+        <tr>
+            <th>UPLOAD DATE</th>
+            <th>FILENAME</th>
+            <th>IMAGE PREVIEW</th>
+            <th>ACTIONS</th>
+        </tr>
     </thead>
-    <tbody style="background-color:grey;">
-    {% for user in users %}
-    <tr>
-        <td>{{ user.created_at.strftime('%A  %d  %B  %Y  %H:%M') }}</td>
-        <td>{{ user.image_path }}</td>
-        <td>
-{% if user.image_path %}
-    <img src="{{ url_for('static', filename='uploads/' + user.image_path) }}" style="width:200px">
-{% else %}
-    <p style="color: gray;">No image uploaded yet.</p>
-{% endif %}
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.created_at.strftime('%A %d %B %Y %H:%M') }}</td>
+            <td>{{ user.image_path }}</td>
+            <td>
+                {% if user.image_path %}
+                    <img id="img" src="{{ url_for('static', filename='uploads/' + user.image_path) }}">
+                {% else %}
+                    <p style="color: gray;">No image uploaded yet.</p>
+                {% endif %}
+            </td>
+            <td>
+                <form action="/uploadocr2" method="post" style="display:inline;">
+                    <input type="hidden" name="image_path" value="{{ user.image_path }}">
+                    <button type="submit" class="action-button">PERFORM OCR</button>
+                </form>
 
-        </td>
-        <td>
-<form action="/uploadocr2" method="post">
-    <input type="hidden" name="image_path" value="{{ user.image_path }}">
-    <button type="submit" style="...">PERFORM OCR</button>
-</form>
-
-
-            <button style="border: 2px black bold;border-radius:10px;background-color:red">
-                <a href="/uploadocr2{{ url_for('static', filename='uploads/' + user.image_path) }}" target="_blank">VIEW IMAGE IN NEW TAB</a>
-            </button>
-
-        </td>
-    </tr>
-    {% endfor %}
+                <a href="{{ url_for('static', filename='uploads/' + user.image_path) }}" target="_blank" class="action-link">VIEW IMAGE</a>
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
-</body>
 {% endblock %}

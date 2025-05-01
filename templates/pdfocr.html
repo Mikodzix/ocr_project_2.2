@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}PDF OCR{% endblock %}
+
+{% block content %}
+<head>
+    <style>
+        body {
+            background-color: #296f6d;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        .container-fluid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #e1f4f3;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            padding: 12px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        #file-name {
+            margin: 10px 0;
+            color: #ccebea;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        button[type="submit"] {
+            padding: 12px 20px;
+            background-color: #49beb7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #3d908e;
+        }
+
+        /* Loading Popup */
+        #loading-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding-top: 200px;
+            font-size: 24px;
+            z-index: 9999;
+        }
+
+        #loading-popup img {
+            width: 20%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="container">
+        <h2>Upload a PDF</h2>
+        <form method="post" action="/pdf-upload" enctype="multipart/form-data" onsubmit="showLoadingPopup()">
+            <input type="file" id="pdf-input" name="pdf-submit" accept="application/pdf" onchange="displayFileName()" required>
+            <p id="file-name"></p>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+<div id="loading-popup">
+    <img src="./static/images/processing.gif" alt="Loading...">
+    <p>Processing your PDF... Please wait.</p>
+</div>
+
+<script>
+    function showLoadingPopup() {
+        document.getElementById('loading-popup').style.display = 'block';
+    }
+
+    function displayFileName() {
+        const input = document.getElementById('pdf-input');
+        const fileNameDisplay = document.getElementById('file-name');
+        if (input.files.length > 0) {
+            fileNameDisplay.textContent = "Selected file: " + input.files[0].name;
+        } else {
+            fileNameDisplay.textContent = "";
+        }
+    }
+</script>
+{% endblock %}

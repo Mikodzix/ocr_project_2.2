@@ -1,24 +1,125 @@
- {% extends "base.html" %}
- {%block title%}LOGIN{%endblock%}
-  {% block content %}
-            {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <p>{{msg}}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
- <body style="background-color: #CEC9C9;">
-<div style="text-align:center">
-    <h1>login to DASHBOARD</h1>
-    <form action="/search" method="post">
-        <p>username:</p>
-        <p><input type="text" name="reqfname"  placeholder="{{failed}}" required></p>
-        <p>password</p>
-        <p><input type="password" name="reqemail" required ></p>
-        <p><input type="submit" value="submit"></p>
-        <a href="/register-redirect"><u>No account? Register to store pictures</u></a>
-    </form>
-</div>
- </body>
- {% endblock %}
+{% extends "base.html" %}
+
+{% block title %}LOGIN{% endblock %}
+
+{% block content %}
+<head>
+    <style>
+        body {
+            background-color: #296f6d;
+            font-family: Arial, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #e1f4f3;
+            font-size: 36px;
+            margin-top: 50px;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 12px;
+            width: 300px;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container p {
+            font-size: 18px;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            color: #333;
+            font-size: 16px;
+            width: 100%; /* Ensure the input takes up full width */
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
+
+        input[type="submit"] {
+            padding: 8px 12px;
+            background-color: #49beb7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3d908e;
+        }
+
+        a {
+            display: inline-block;
+            color: #fff;
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #f1f1f1;
+        }
+
+        .flash-messages {
+            color: #f8d7da;
+            background-color: #f5c6cb;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .flash-messages p {
+            margin: 0;
+        }
+        .btn {
+      padding: 8px 12px;}
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h1>Login to Dashboard</h1>
+        
+        <!-- Display any flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Login Form -->
+        <form action="/search" method="post">
+            <p>Username:</p>
+            <p><input type="text" name="requsername" placeholder="{{failed}}" required></p>
+            
+            <p>Password:</p>
+            <p><input type="password" name="reqemail" required></p>
+            
+            <p><input type="submit" value="Login"></p>
+        </form>
+        
+        <a href="/register"><u>No account? Register to store pictures</u></a>
+    </div>
+</body>
+
+{% endblock %}

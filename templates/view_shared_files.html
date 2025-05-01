@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Shared Files{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #296f6d;
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    h1 {
+        color: #e1f4f3;
+        font-size: 36px;
+        margin-top: 50px;
+        margin-bottom: 20px;
+    }
+
+    .flash-messages {
+        color: #f8d7da;
+        background-color: #f5c6cb;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    li {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 12px;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #img {
+        max-width: 100%;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .a {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 15px;
+        background-color: #49beb7;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .a:hover {
+        background-color: #3d908e;
+    }
+
+    .no-files {
+        font-size: 18px;
+        color: #f8d7da;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #49beb7;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 18px;
+    }
+
+    .back-link:hover {
+        background-color: #3d908e;
+    }
+</style>
+
+<h1>Images Shared With You</h1>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<!-- Display Shared Images -->
+{% if shared_images %}
+    <ul>
+        {% for image in shared_images %}
+            <li>
+                <img id="img" src="{{ url_for('static', filename='uploads/' + image.image_path) }}" alt="Shared Image">
+                <p>Shared by User: {{ image.shared_by_user.org_username }}</p>
+                <a class="a" href="{{ url_for('download_shared_file', image_id=image.id) }}">Download Image</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="no-files">No images shared with you.</p>
+{% endif %}
+
+<a href="{{ url_for('user') }}" class="back-link">Back to Dashboard</a>
+{% endblock %}

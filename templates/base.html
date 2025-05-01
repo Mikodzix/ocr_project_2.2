@@ -9,24 +9,64 @@
       box-sizing: border-box;
     }
 
-    #user:hover{
-    background-color:green;
-    color:white;
-    }
-
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      background: radial-gradient(circle at center, #296f6d 0%, #204f4e 100%);
+      overflow-x: hidden;
+      text-align:center;
+    }
+
+    /* Decorative blurred shapes */
+    .bg-shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.2;
+      z-index: 0;
+    }
+
+    .circle1 {
+      width: 300px;
+      height: 300px;
+      background: #00b3a4;
+      top: -120px;
+      left: -100px;
+    }
+
+    .circle2 {
+      width: 250px;
+      height: 250px;
+      background: #1c908a;
+      bottom: -80px;
+      right: -60px;
+    }
+
+    #logo {
+      height: 5%;
+      width: 20%;
+      border-radius: 12px;
+    }
+
+    #user {
+      color: white;
+    }
+
+    #user:hover {
+      background-color: #085f63;
+      color: white;
     }
 
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #f8f9fa;
+      background-color: #49beb7;
       padding: 10px 20px;
       flex-wrap: wrap;
+      z-index: 2;
+      position: relative;
     }
 
     .navbar-brand {
@@ -54,11 +94,12 @@
       gap: 15px;
       transition: max-height 0.3s ease-out;
       overflow: hidden;
+      margin-left: 20%;
     }
 
     .nav-link {
       text-decoration: none;
-      color: #333;
+      color: #085f63;
       padding: 8px 12px;
       transition: background-color 0.3s;
     }
@@ -66,6 +107,7 @@
     .nav-link:hover {
       background-color: #e2e6ea;
       border-radius: 4px;
+      color:black;
     }
 
     .form-inline {
@@ -80,6 +122,11 @@
       color: #28a745;
       cursor: pointer;
       transition: background-color 0.3s;
+      text-decoration: none;
+      color: white;
+      font-size: 18px;
+
+        }
     }
 
     .btn:hover {
@@ -87,11 +134,11 @@
     }
 
     @media (max-width: 600px) {
-       #user{
-          background-color:green;
-          color:white;
-          width:100%
-          }
+      #user {
+        background-color: green;
+        color: white;
+        width: 100%;
+      }
 
       .navbar {
         flex-direction: column;
@@ -106,16 +153,17 @@
         flex-direction: column;
         width: 100%;
         max-height: 0;
+        margin-left: 0%;
       }
 
       .navbar-nav.active {
-        max-height: 500px; /* enough height to reveal all items */
+        max-height: 500px;
       }
 
       .nav-link,
       .form-inline {
         width: 100%;
-        padding: 10px 0;
+        padding: 0px 0;
       }
 
       .form-inline {
@@ -125,21 +173,26 @@
   </style>
 </head>
 <body>
+  <!-- Background decorative elements -->
+  <div class="bg-shape circle1"></div>
+  <div class="bg-shape circle2"></div>
+
   <nav class="navbar">
-    <a class="navbar-brand" href="/">MYOCR</a>
+    <a class="navbar-brand" href="/"><img id="logo" src="./static/images/logo-crop.png" /></a>
     <div class="navbar-toggler" onclick="toggleNavbar()">
       <span></span>
       <span></span>
       <span></span>
     </div>
     <div class="navbar-nav" id="navbarSupportedContent">
-      <a class="nav-link" href="/login-redirect">Login</a>
+      <a class="nav-link" href="/login">Login</a>
       <a class="nav-link" href="/logout">Logout</a>
-      <a class="nav-link" href="/register-redirect">Register</a>
+      <a class="nav-link" href="/register">Register</a>
       <a class="nav-link" href="/upload">Upload</a>
-      <form class="form-inline" action="/user-redirect">
-        <button class="btn" type="submit" id="user">USER</button>
-      </form>
+      <a class="nav-link" href="/share_image">Share</a>
+      <a class="nav-link" href="/view_shared_files">View Share</a>
+      <a class="btn" href="/user" id="user">DASHBOARD</a>
+
     </div>
   </nav>
 

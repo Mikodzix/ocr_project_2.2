@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Tess OCR{% endblock %}
+
+{% block content %}
+
+<div class="tesseract-container" style="text-align: center; padding: 20px;">
+
+    <p><b>LOW DATA OCR</b></p>
+
+    <!-- Tooltip for hover information -->
+    <a title="Offline processor, works well with little to no data.
+    Documents processed here have to be scanned text type
+    documents that are straight and have no obstructions in
+    the text for maximum efficiency. This model uses Tesseract for
+    image processing. HANDWRITTEN DOCUMENTS NOT RECOMMENDED.
+    FOR HANDWRITTEN CONVERSION USE ABOVE MODEL." 
+       style="cursor:pointer; color: #007bff; text-decoration: none;">
+        ❔ Hover for info
+    </a>
+
+    <pre id="text-content" style="color: #868686; font-size: 16px; margin-top: 20px;">SCANNED TEXT WILL APPEAR HERE</pre>
+
+    <!-- File input for image -->
+    <input type="file" id="imgfile" accept="image/*" required style="margin-top: 20px;">
+
+    <br><br>
+
+    <!-- Submit button -->
+    <button id="btn" type="submit" style="padding: 10px 20px; background-color: #1f4f4e; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+        Submit
+    </button>
+
+    <br><br>
+
+    <!-- Save as .doc button -->
+    <button onclick="saveAsDoc()" style="padding: 10px 20px; background-color: #00b3a4; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+        Save as .doc
+    </button>
+
+</div>
+
+<!-- Loading popup -->
+<div id="loading-popup" class="loading-popup" style="display: none;">
+    <div class="loading-box" style="background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 10px;">
+        <img src="{{ url_for('static', filename='images/processing.gif') }}" alt="Loading..." style="width: 50px; height: 50px;">
+        <p style="color: white; margin-top: 10px;">Processing your document... Please wait.</p>
+    </div>
+</div>
+
+<script>
+// Tesseract image to text conversion code
+document.getElementById('btn').addEventListener('click', () => {
+    console.log('clicked');
+    console.log(document.getElementById('imgfile').files[0]);
+
+    Tesseract.recognize(
+        document.getElementById('imgfile').files[0],
+        'eng',
+        { logger: m => console.log(m) }
+    ).then(({ data: { text } }) => {
+        document.getElementById('text-content').innerText = text;
+        console.log(text);
+    });
+});
+
+// Function to save text as .doc file
+function saveAsDoc() {
+    var content = document.getElementById("text-content").innerHTML;
+    var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                "<head><meta charset='utf-8'></head><body>";
+    var footer = "</body></html>";
+    var sourceHTML = header + content + footer;
+    var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+    var fileDownload = document.createElement("a");
+    document.body.appendChild(fileDownload);
+    fileDownload.href = source;
+    fileDownload.download = 'document.doc';
+    fileDownload.click();
+    document.body.removeChild(fileDownload);
+}
+
+// Function to show the loading pop-up
+function showLoadingPopup() {
+    document.getElementById("loading-popup").style.display = "flex";
+}
+</script>
+
+{% endblock %}

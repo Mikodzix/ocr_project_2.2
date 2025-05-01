@@ -1,28 +1,222 @@
- {% extends "base.html" %}
- {%block title%}REGISTER{%endblock%}
-  {% block content %}
- <body style="background-color: #CEC9C9;">
-            {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <p>{{msg}}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-<div style="text-align:center">
-    <h1>register</h1>
-<form action="/submit", method="post" enctype="multipart/form-data">
-    <p>*username:</p>
-    <p><input type="text" name="fname" required></p>
-    <p>*enter password:</p>
-    <p><input type="text" name="reg-password" required></p>
-    <p>*re-enter password:</p>
-    <p><input type="text" name="reg-password-confirm" required></p>
-    <p>*email:</p>
-    <p><input type="email" name="email" required></p>
-        <p><input type="submit" value="submit"></p>
-    <a href="/login-redirect" ><u>Already have an account? Log in</u></a>
-</form>
-</div>
- </body>
+{% extends "base.html" %}
+
+{% block title %}REGISTER{% endblock %}
+
+{% block content %}
+<head>
+    <style>
+        body {
+            background-color: #296f6d;
+            font-family: Arial, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #e1f4f3;
+            font-size: 36px;
+            margin-top: 50px;
+        }
+
+        .register-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 12px;
+            width: 350px;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .register-container p {
+            font-size: 18px;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            padding: 12px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            color: #333;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            padding: 12px 20px;
+            background-color: #49beb7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3d908e;
+        }
+
+        a {
+            display: inline-block;
+            color: #fff;
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #f1f1f1;
+        }
+
+        .flash-messages {
+            color: #f8d7da;
+            background-color: #f5c6cb;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .flash-messages p {
+            margin: 0;
+        }
+
+        .status-message {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .status-message.error {
+            color: red;
+        }
+
+        .status-message.success {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-container">
+        <h1>Register</h1>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Registration Form -->
+        <form action="/submit" method="post" enctype="multipart/form-data">
+            <p><strong>*username:</strong></p>
+            <p>
+                <input type="text" name="reg-username" id="reg-username" required>
+                <div id="username-status" class="status-message"></div>
+            </p>
+
+            <p><strong>*enter password:</strong></p>
+            <p><input type="password" name="reg-password" id="reg-password" required></p>
+
+            <p><strong>*re-enter password:</strong></p>
+            <p><input type="password" name="reg-password-confirm" id="reg-password-confirm" required></p>
+
+            <p><label id="password-error" class="status-message"></label></p>
+
+            <p><strong>*email:</strong></p>
+            <p><input type="email" name="email" required></p>
+
+            <p><input type="submit" value="Submit" id="submit-button" disabled></p>
+            <a href="/login"><u>Already have an account? Log in</u></a>
+        </form>
+    </div>
+
+    <!-- JavaScript for live username check -->
+    <script>
+        let timer;
+        const usernameInput = document.getElementById('reg-username');
+        const statusDiv = document.getElementById('username-status');
+        const submit_button = document.getElementById('submit-button');
+        const regPassword = document.getElementById('reg-password');
+        const regPasswordConfirm = document.getElementById('reg-password-confirm');
+        const passwordMessage = document.getElementById('password-error');
+
+        // Function to check if all conditions are met for enabling the submit button
+        function checkFormValidity() {
+            const usernameValid = statusDiv.classList.contains('success');
+            const passwordsMatch = regPassword.value === regPasswordConfirm.value;
+            const passwordValid = passwordsMatch && regPassword.value !== '';
+            const formValid = usernameValid && passwordValid && document.querySelector('input[type="email"]').value !== '';
+
+            submit_button.disabled = !formValid;
+        }
+
+        // Username availability check
+        usernameInput.addEventListener('input', function() {
+            clearTimeout(timer);
+
+            const username = usernameInput.value.trim();
+            if (username.length === 0) {
+                statusDiv.textContent = '';
+                statusDiv.classList.remove('error', 'success');
+                checkFormValidity();
+                return;
+            }
+
+            statusDiv.textContent = 'Checking...'; // Show checking while waiting
+
+            timer = setTimeout(() => {
+                fetch(`/check_username?username=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            statusDiv.textContent = 'Username already taken';
+                            statusDiv.classList.add('error');
+                            statusDiv.classList.remove('success');
+                        } else {
+                            statusDiv.textContent = 'Username available';
+                            statusDiv.classList.add('success');
+                            statusDiv.classList.remove('error');
+                        }
+                        checkFormValidity(); // Check the form validity after username check
+                    })
+                    .catch(error => {
+                        statusDiv.textContent = 'Error checking username';
+                        statusDiv.classList.add('error');
+                        statusDiv.classList.remove('success');
+                        checkFormValidity();
+                    });
+            }, 400); // 400ms debounce
+        });
+
+        // Password confirmation check
+        regPasswordConfirm.addEventListener('input', function() {
+            if (regPassword.value !== regPasswordConfirm.value) {
+                passwordMessage.textContent = 'PASSWORDS DON\'T MATCH';
+                passwordMessage.style.color = 'red';
+            } else {
+                passwordMessage.textContent = 'PASSWORDS MATCH';
+                passwordMessage.style.color = 'green';
+            }
+            checkFormValidity(); // Check the form validity after password check
+        });
+
+        // Initial form validity check when the page loads
+        checkFormValidity();
+    </script>
+</body>
+
 {% endblock %}
