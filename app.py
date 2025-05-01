@@ -572,20 +572,25 @@ def check_username():
 
     return jsonify({'exists': exists})
 
-#<------------------------------------------WORKING CODE ABOVE------------------------------------------------------>
-#<------------------------------------------TEST CODE BELOW---------------------------------------------------------->
-
+#PDF OCR PAGE RENDER
 @app.route('/pdfocr')
 def pdfocr():
     return render_template('pdfocr.html')
 
+#IMAGE OCR PAGE RENDER
 @app.route('/imageocr')
 def imageocr():
     return render_template('imageocr.html')
 
+#TESSERACT PAGE RENDER
 @app.route('/tessocr')
 def tessocr():
     return render_template('tessocr.html')
+
+
+
+#<------------------------------------------WORKING CODE ABOVE------------------------------------------------------>
+#<------------------------------------------TEST CODE BELOW---------------------------------------------------------->
 
 
 
