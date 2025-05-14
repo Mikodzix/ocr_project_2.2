@@ -1,18 +1,44 @@
-TEMPLATES FOLDER CONTAINS PAGE RENDERING FILES:
-    BASE.HTML : NAVBAR STYLE USING BASIC CSS AND HTML
-    INDEX.HTML: HOME PAGE TO PERFORM OCR WITHOUT LOGIN
-    LOGIN.HTML : DISPLAYS THE USER LOGIN PAGE
-    OCR_UPLOAD.HTML : ALLOWS A LOGGED IN USER TO UPLOAD FILES TO THEIR DB
-    REGISTER.HTML : DISPLAYS THE USER REGISTRATION PAGE
-    RESULT.HTML : DISPLAYS THE OCR RESULT OF GOOGLE VISION (THE TOP OCR MODEL)
-    USER.HTML : RENDERS THE USER DASHBOARD
+OCR Web Application
+This is an OCR web application built with Flask, Google Vision API, and Donut (for better table detection). The app enables users to upload images, process them using OCR models, and view or download results.
 
-IMAGES THAT ARE UPLOADED ARE STORED IIN THE STATIC FOLDER AS THIS DEVICE ACTS AS THE SERVER AND DB
+File Structure
+Templates Folder
+Contains all page rendering files for the web application:
 
-<------------------------------------------------------------------------------------------------------------------------>
+base.html: Includes the navbar style using basic CSS and HTML.
 
-the following is donut model code that failed:
+index.html: Home page where users can perform OCR without logging in.
 
+login.html: User login page.
+
+ocr_upload.html: Allows logged-in users to upload files to the database.
+
+register.html: User registration page.
+
+result.html: Displays the OCR result from the Google Vision OCR model.
+
+user.html: User dashboard page.
+
+imageocr.html: A page that enables OCR processing for images without the need for a user login.
+
+pdfocr.html: A page that enables OCR processing for PDFs, also without the need for a user login.
+
+share_image.html: Page to share OCR results with others.
+
+tessocr.html: Page to perform OCR using the Tesseract model.
+
+view_shared_files.html: Page to view files shared with the user.
+
+
+<---------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+
+Donut Model Code
+This model performs OCR using Donut for better table detection. The code provided below loads the Donut model and processor, and generates output text after processing the image:
+
+python
+Copy
+Edit
 from transformers import DonutProcessor, VisionEncoderDecoderModel
 import torch
 from PIL import Image
@@ -32,8 +58,11 @@ def ocr_with_donut(image_path):
     output_ids = model.generate(inputs["pixel_values"], max_length=512)
     output_text = processor.decode(output_ids[0], skip_special_tokens=True)
     return output_text
+Route for handling OCR with Donut:
 
-
+python
+Copy
+Edit
 @app.route('/uploadocr3', methods=['POST'])
 def upload_image3():
     if 'image' not in request.files:
@@ -104,14 +133,16 @@ def upload_image3():
                            detected_logos=detected_logos,
                            file_stream=file_stream)
 
-<------------------------------------------------------------------------------------------------------------------------->
+<----------------------------------------------------------------------------------------------------------------------------------------->
+Excel Adding Code
+The following code uses the ExtractTable library to extract tables from an image and save the data in CSV format:
 
-code for excel adding that failed
-
-api_key = "ChGbPuMaL629n4uW8sm4ViHN7i803ajHDBKjpKFE"
+python
+Copy
+Edit
+api_key = ""
 et_sess = ExtractTable(api_key)
 usage = et_sess.check_usage()
-
 
 @app.route("/csvtest", methods=["POST"])
 def csvtest():
@@ -130,5 +161,14 @@ def csvtest():
 
     return render_template("result2.html", detected_text=table_data, csv_filename=csv_filename)
 
-<------------------------------------------------------------------------------------------------------------------------->
+<----------------------------------------------------------------------------------------------------------------------->
+Conclusion
+This application allows users to:
 
+Upload images for OCR processing.
+
+Get text results, including table detection (with Donut).
+
+Download results as DOCX or CSV files.
+
+Share OCR results and view shared files.
